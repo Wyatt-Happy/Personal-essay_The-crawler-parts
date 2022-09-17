@@ -1,0 +1,60 @@
+import urllib.parse
+import urllib.request
+import gzip
+import json
+import speech
+
+print('------天气查询------')
+city_name = input('请输入要查询的城市名称：')
+url = 'http://wthrcdn.etouch.cn/weather_mini?city=' + urllib.parse.quote(city_name)
+weather_data = urllib.request.urlopen(url).read()
+
+    # 读取网页数据
+weather_data = gzip.decompress(weather_data).decode('utf-8')
+    # #解压网页数据
+weather_dict = json.loads(weather_data)
+
+
+
+
+
+if weather_dict.get('desc') == 'invilad-citykey':
+    print('你输入的城市有误或未收录天气，请重新输入...')
+elif weather_dict.get('desc') == 'OK':
+    forecast = weather_dict.get('data').get('forecast')
+    a=forecast[0].get('date')
+    b=weather_dict.get('data').get('city')
+    c=forecast[0].get('type')
+    d=weather_dict.get('data').get('wendu')
+    e=forecast[0].get('high')
+    f=forecast[0].get('low')
+    g=forecast[0].get('fengxiang')
+    print('日期：', forecast[0].get('date'))
+    print('城市：', weather_dict.get('data').get('city'))
+    print('天气：', forecast[0].get('type'))
+    print('温度：', weather_dict.get('data').get('wendu') + '℃ ')
+    print('高温：', forecast[0].get('high'))
+    print('低温：', forecast[0].get('low'))
+    print('风向：', forecast[0].get('fengxiang'))
+
+speech.say('您好，尊敬的用户')
+speech.say("今日日期为")
+speech.say(a)
+speech.say("查询的城市为")
+speech.say(b)
+speech.say("所要查询的天气为")
+speech.say(c)
+speech.say("温度为")
+speech.say(d)
+speech.say(e)
+speech.say(f)
+speech.say("风向为")
+speech.say(g)
+
+
+
+
+
+
+
+

@@ -1,0 +1,61 @@
+#调用函数
+from selenium import webdriver
+from selenium.webdriver.common.keys import Keys
+import time
+import openpyxl as xl
+
+#打开并进入相应搜索框
+good_name = input('请输入爬取商品信息:').strip()
+driver = webdriver.Firefox()
+driver.get('https://www.jd.com/')
+input_tag = driver.find_element_by_id('key')
+input_tag.send_keys(good_name)
+input_tag.send_keys(Keys.ENTER)
+time.sleep(2)
+driver.execute_script("window.scrollTo(0,5000)")
+time.sleep(2)
+
+#建立一个表格键入需要的文字提示
+wb = xl.Workbook()
+ws = wb.active
+ws.cell(1, 1, "商品链接")
+ws.cell(1, 2, "商品名称")
+ws.cell(1, 3, "商品价格")
+ws.cell(1, 4, "评价人数")
+ws.cell(1, 5, "店铺名称")
+ws.cell(1, 6, "店铺连接")
+
+#筛选并写入相应的爬取内容
+
+good_list = driver.find_elements_by_class_name('gl-item')
+n=2
+for good in good_list:
+    good_url = good.find_element_by_css_selector(
+
+                    '.p-img a').get_attribute('href')
+    ws.cell(n, 1, good_url)
+    good_name = good.find_element_by_css_selector(
+
+        '.p-name em').text.replace("\n", "--")
+    ws.cell(n, 2, good_name)
+    good_price = good.find_element_by_class_name(
+
+        'p-price').text.replace("\n", ":")
+    ws.cell(n, 3, good_price)
+    good_commit = good.find_element_by_class_name(
+
+        'p-commit').text.replace("\n", " ")
+    ws.cell(n, 4, good_commit)
+    shop_url = good.find_element_by_css_selector(
+
+        '.p-shop a').get_attribute('href')
+    ws.cell(n, 5, shop_url)
+    shop_name = good.find_element_by_css_selector(
+
+        '.p-shop a').get_attribute('title')
+    ws.cell(n, 6, shop_name)
+    n=n+1
+
+#保存关闭表格及浏览器
+wb.save('京东.xlsx')
+wb.close()

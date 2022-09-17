@@ -1,0 +1,71 @@
+from bs4 import BeautifulSoup
+import requests, sys
+
+"""
+类说明:下载《穷爸爸富爸爸》
+Modify:
+    2018-10-20，星期六
+Author:
+	Happy
+"""
+
+
+class download(object):
+    def __init__(self):
+        self.server_url = 'http://www.mingzhuxiaoshuo.com'
+        self.target_url = 'http://www.mingzhuxiaoshuo.com/waiguo/154/'
+        self.names = []
+        self.urls = []
+        self.nums = 0
+
+    """
+    获取下载的链接
+    获取目录
+    """
+
+    def download_url(self):
+        req = requests.get(url=self.target_url)
+        html = req.text.encode("latin1").decode("gbk")
+        bf = BeautifulSoup(html, 'lxml')
+        texts = bf.find_all('div', 'list')
+        bf_a = BeautifulSoup(str(texts), 'lxml')
+        a = bf_a.find_all('a')
+        self.nums = len(a)
+        for i in a:
+            self.names.append(i.string)
+            self.urls.append(self.server_url + i.get('href'))
+
+    """
+    获取每一章节的内容
+    """
+
+    def download_content(self, target_url):
+        req = requests.get(url=target_url)
+        html = req.text.encode("latin1").decode("gbk")
+        bf = BeautifulSoup(html, 'lxml')
+        texts = bf.find_all('div', class_='width')
+        bf_div = BeautifulSoup(str(texts), 'lxml')
+        div = bf_div.find_all('div')
+        txt = ''
+        for i in div:
+            if i.string is not None:
+                txt = txt + i.string + '\n\n'
+        return txt
+
+    def writer(self, name, path, text):
+        write_flag = True
+        with open(path, 'a', encoding='utf-8') as f:
+            f.write(name + '\n')
+            f.writelines(text)
+            f.write('\n\n')
+
+
+if __name__ == '__main__':
+    dl = download()
+    dl.download_url()
+    print("开始下载")
+    for i in range(dl.nums):
+        dl.writer(dl.names[i], '穷爸爸富爸爸.txt', dl.download_content(dl.urls[i]))
+        sys.stdout.write("已下载：%.3f%%" % float(i / dl.nums) + '\r')
+        sys.stdout.flush
+    print('已下载完成')

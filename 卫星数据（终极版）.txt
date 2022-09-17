@@ -1,0 +1,23 @@
+import requests
+import os
+from lxml import etree
+
+urls = ['http://www.aihangtian.com/fashe/list_{}.html'.format(i) for i in range(2, 24)]
+path = r'D:/weixing/'
+
+
+def get_weixing(url, n):
+    r = requests.get(url)
+    selector = etree.HTML(r.text)
+    date = selector.xpath('//div[@class="item"]//text()')
+
+
+    with open(os.path.join(path, str(n+2) + ".txt"), 'a', encoding='utf-8')as f:
+        for i in date :
+            f.write(i + "\n")
+
+
+if __name__ == '__main__':
+    for n, url in enumerate(urls):
+        get_weixing(url, n)
+

@@ -1,0 +1,42 @@
+from lxml import etree
+import requests
+
+page_url="https://search.jd.com/Search?keyword=%E6%89%8B%E6%9C%BA&enc=utf-8&wq=%E6%89%8B%E6%9C%BA&pvid=8f341712482744078ed70c8710a4c722"
+headers={
+    'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.162 Safari/537.36'
+}
+res=requests.get(page_url,headers=headers)
+res.encoding="utf-8"
+html=etree.HTML(res.text)
+lis=html.xpath('//ul[@class="gl-warp clearfix"]/li')
+print(len(lis))
+content=[]
+for li in lis:
+    price=li.xpath('//div[@class="p-price"]/strong/i/text()')[0]
+    print(price)
+    label=li.xpath('.//div[@class="p-name p-name-type-2"]/a/em/text()')[0].strip()
+    print(label)
+    detail_url="https:"+li.xpath('.//div[@class="p-name p-name-type-2"]/a/@href')[0].strip()
+    print(detail_url)
+    content.append((price,label,detail_url))
+
+
+#存储到csv（csv）和excel（pandas）里面
+import csv
+with open("csv_spider.csv","w",newline="",encoding="utf-8") as f:       #写入csv文件默认一行数据一行空；newline=""可以不空。
+    writer=csv.writer(f)        #创建csv写入对象
+    writer.writerows([("价格","标签","链接")])
+    writer.writerows(content)
+
+import pandas as pd
+df=pd.read_csv("csv_spider.csv")       #文件的路径
+print(df)
+df.to_excel("excel_spider.xlsx")
+
+
+'''
+拓展：直接创建excel表格并写入数据：
+data=pd.DataFrame({"price":["55","445"],"label":["spider","sss"]})
+data.to_excel("demo.xlsx")
+'''
+

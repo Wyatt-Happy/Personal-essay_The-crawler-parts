@@ -1,0 +1,27 @@
+import urllib.request
+import re
+import os
+def get_html(url):
+    page=urllib.request.urlopen(url)
+    html_a=page.read()
+    return html_a.decode('utf-8')
+def get_img(html):
+    reg=r'https://[^\s]*?\.jpg'
+    imgre = re.compile(reg)
+    imglist = imgre.findall(html)
+    x=0
+    path = 'text'
+    if not os.path.isdir(path):
+        os.makedirs(path)
+    paths=path+"\\"
+    for imgurl in imglist:
+        urllib.request.urlretrieve(imgurl,'{0}{1}.jpg'.format(paths,x))
+        x=x+1
+        print("图片下载中")
+    return imglist
+
+
+
+
+html_b=get_html("https://tieba.baidu.com/p/6055320747")
+print(get_img(html_b))

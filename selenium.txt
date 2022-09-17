@@ -1,0 +1,9 @@
+from selenium import webdriver
+from selenium.webdriver.common.keys import Keys
+driver = webdriver.Firefox()#打开浏览器
+driver.get('https://mall.jd.com/showLicence-10395996.html')#进入当前页面
+input = driver.find_element_by_id("verifyCode")#匹配当前id
+input.send_keys("rdce")#输入的信息
+input.send_keys(Keys.ENTER)#点击确定
+#print(driver.page_source)#输出数据
+

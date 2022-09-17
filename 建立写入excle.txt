@@ -1,0 +1,11 @@
+import openpyxl as xl
+import xlwt
+
+
+
+if __name__ == '__main__':
+    wb = xl.Workbook()
+    ws = wb.active
+    ws.cell(1, 1, "jhjjhjkjhjhk")
+    wb.save('1.xlsx')
+    wb.close()

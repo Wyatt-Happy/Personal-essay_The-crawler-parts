@@ -1,0 +1,50 @@
+import requests
+from lxml import etree
+import csv
+
+url = "https://news.sina.com.cn/china/"
+
+def get_html(url):
+    response = requests.get(url)
+    response.encoding = 'utf-8'
+    return response.text
+
+
+def getAllItem(res):
+        html = etree.HTML(res)
+        AllItem = []
+
+        title = html.xpath('//ul[@class="news-2"]/li/a/text()')
+        url = html.xpath('//ul[@class="news-2"]/li/a/@href')
+        for index, i in enumerate(title):
+            Items = {}
+            Items['title'] = i
+            Items['url'] = url[index]
+            AllItem.append(Items)
+        return AllItem
+
+
+def writecsv(AllItem):
+        with open('text.csv', 'a', newline='') as out:
+            csv_write = csv.writer(out, dialect='excel')
+            csv_write.writerow(["ÐòºÅ", "title", "url"])
+            for index, i in enumerate(AllItem):
+                csv_write.writerow([index + 1, i['title'], i['url']])
+        return True
+
+
+def readercsv():
+        with open("text.csv", "r") as csvfile:
+            reader = csv.reader(csvfile)
+            for line in reader:
+                print(line)
+
+
+if __name__ == "__main__":
+    res = get_html(url)
+    AllItem = []
+    AllItem = getAllItem(res)
+    writecsv(AllItem)
+    readercsv()
+
+

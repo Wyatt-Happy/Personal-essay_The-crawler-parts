@@ -1,0 +1,13 @@
+import requests
+import re
+url='https://movie.douban.com/cinema/nowplaying/beijing/'
+headers={'User-Agent': 'Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3947.100 Safari/537.36'}
+response=requests.get(url,headers=headers)
+print(response.text)
+html_str=response.text
+pattern=re.compile('data-title="(.+?)"',re.S)
+items=re.findall(pattern,html_str)
+print(items)
+with open('douban.txt','w',encoding='utf-8')as f:
+    for item in items:
+        f.write(item+"\n")

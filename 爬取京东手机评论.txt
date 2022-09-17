@@ -1,0 +1,36 @@
+
+import requests
+import json
+
+headers = {
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.102 Safari/537.36'
+}
+
+fetch_comment_count = 1000  
+index = 0  
+page_index = 0  
+flag = True  
+
+while flag:
+    url = 'https://club.jd.com/comment/productPageComments.action?callback=fetchJSON_comment98&productId=100005492549&score=0&sortType=6&page={}&pageSize=10&isShadowSku=100008348530&rid=0&fold=1'.format(
+        page_index)
+    page_index += 1
+    res = requests.get(url=url, headers=headers)
+    text = res.text
+    json_str = text.replace('fetchJSON_comment98(', '')[:-2]
+    json_obj = json.loads(json_str)  
+    comments_list = json_obj['comments']
+    comments_list_length = len(comments_list)
+    for i in range(comments_list_length):
+        comments = comments_list[i]['content']
+        print(f'< {index + 1} > {comments}')
+        creation_time = comments_list[i]['creationTime']  
+        nickname = comments_list[i]['nickname']  
+        print(creation_time)
+        print(nickname)
+        print("-" * 20)
+        index += 1
+        if index == fetch_comment_count:
+            flag = False
+            break
+

@@ -1,0 +1,12 @@
+import requests
+import re
+url='http://www.aihangtian.com/fashe/list_2.html'
+response=requests.get(url)
+html=response.text
+print(html)
+pattern=re.compile('<div class="item">.{1,}',re.S)
+items=re.findall(pattern,html)
+print(items)
+with open('Œ¿–«.docx','w',encoding='utf-8')as f:
+    for item in items:
+        f.write(item+"\n")
